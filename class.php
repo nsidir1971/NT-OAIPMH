@@ -2051,7 +2051,7 @@ function getCostumeCreator($personID){
  * Calling an RESTFull API function
  */
 
- function CallAPI($method, $url, $data = false){
+ function CallAPI($method, $url, $data = array()){
     $curl = curl_init();
     switch ($method){
         case "POST":
