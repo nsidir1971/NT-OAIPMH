@@ -259,7 +259,7 @@ if(!$hasrequestError){
             break;
         case "ListSets":
             $xmlRequest = '<request verb="ListSets">' . $oaiURL . '</request>';
-            $xmlBody = '<listSets>';
+            $xmlBody = '<ListSets>';
             $xmlset = '';
             foreach($semanticTypes as $key => $set){
 
@@ -277,7 +277,7 @@ if(!$hasrequestError){
                         </set>';
 
             }
-            $xmlBody .= $xmlset . '</listSets>';
+            $xmlBody .= $xmlset . '</ListSets>';
             break;
         case "ListIdentifiers":
             $cursor = '';
@@ -357,11 +357,13 @@ if(!$hasrequestError){
         $XMLresponse  = $xmlHeader . $xmlRequest . $xmlBody . $xmlFooter;
     }
 
-    header("Content-type: text/xml; charset=utf-8");
+    header("Content-type: text/xml");
+    echo "<?xml version='1.0' encoding='UTF-8'?>";
     
     echo $XMLresponse;
 }else{
-    header("Content-type: text/xml; charset=utf-8");
+    header("Content-type: text/xml");
+    echo "<?xml version='1.0' encoding='UTF-8'?>";
     $XMLresponse = displayErrorResponse($error, $currRequestDate, $verb, $metadataPrefix, $set, $from, $until, $identifier, $resumptionToken);
     echo $XMLresponse;                    
 
