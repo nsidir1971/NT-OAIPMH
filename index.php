@@ -191,7 +191,6 @@ if(!$hasrequestError){
                 if($resumptionToken != ''){
                     $decodedresumption = base64_decode($resumptionToken);
                     $resumArray=explode('_', $decodedresumption);
-                    echo '------>'.count($resumArray);
                     if(count($resumArray)==4){
                         if($resumArray[0] == 'listRec'){
                             $page=intval($resumArray[1]);
