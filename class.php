@@ -811,7 +811,7 @@ function rdf_get_item($item, $itemID){
                           $xmlENdescr .
                           '<dc:date>' . $playYear . '</dc:date>
                           <edm:type>VIDEO</edm:type>';
-                
+                $edmObject='';
                 if($info['IsURL']==0){ //Video is NOT a URL address
                     $files=get_physical_details('video', $itemID, $info['videoFile']);
                     if(!empty($files)){
@@ -831,6 +831,9 @@ function rdf_get_item($item, $itemID){
                                     <dc:extend>'. $files['duration'] . '</dc:extend>
                                     <dc:rights rdf:resource="https://creativecommons.org/licenses/by-nd/4.0/" />';  
                     }
+                    if($files['thumbURL']!=''){
+                        $edmObject = '<edm:object rdf:resource="' . $files['thumbURL'] . '"/>';
+                    }
                 }else{    // Video IS a youtube or URL address
                     $XMLweb='<dc:type rdf:resource="http://vocab.getty.edu/page/aat/300310110" />
                     <dc:creator rdf:resource="' . $NT_rdf . '" />
@@ -841,11 +844,13 @@ function rdf_get_item($item, $itemID){
                     <dc:language>el</dc:language>
                     <dc:rights rdf:resource="https://creativecommons.org/licenses/by-nd/4.0/" />';  
                 }
+
                 $XMLaggre='<edm:aggregatedCHO rdf:resource="#' . $itemID . '"/>
                            <edm:dataProvider>Εθνικό Θέατρο</edm:dataProvider>
                            <edm:isShownAt rdf:resource="' . $handlerURL . "/video/" . $itemID . '"/>
-                           <edm:isShownBy rdf:resource="' . $files['physicalFileURL'] . '"/>
-                           <edm:rights rdf:resource="https://creativecommons.org/licenses/by-nd/4.0/"/>
+                           <edm:isShownBy rdf:resource="' . $files['physicalFileURL'] . '"/>'.
+                            $edmObject .
+                           '<edm:rights rdf:resource="https://creativecommons.org/licenses/by-nd/4.0/"/>
                            <dc:rights>Εθνικό Θέατρο</dc:rights>';
 
                 $XMLextras='<skos:Concept rdf:about="' . $semantic['concept'] . '">
@@ -888,7 +893,7 @@ function rdf_get_item($item, $itemID){
                     $videoPartExt='0'.$videoPartExt;
                 }
                 $videoPartFile=$info['videoFile'].'-'.$videoPartExt;
-
+                $edmObject='';
                 $files=get_physical_details('videopart', $itemID, $videoPartFile);
                 if(!empty($files)){
                     if($files['size']<1048576){
@@ -898,7 +903,7 @@ function rdf_get_item($item, $itemID){
                     }elseif($files['size']>1073741824){
                         $displaySize=intval($files['size']/(1024*1024*1024)). ' GB';
                     }
-                    $semantic=$semanticTypes['videopart'];
+                    $semantic=$semanticTypes['videoparts'];
                     //resource must be found for National Theatre
                     $XMLweb='<dc:type rdf:resource="' . $semantic['concept'] . '" />
                                 <dc:creator rdf:resource="' . $NT_rdf . '" />
@@ -911,13 +916,18 @@ function rdf_get_item($item, $itemID){
                                     <skos:prefLabel xml:lang="el">' . $semantic['labelGR'] . '</skos:prefLabel>
                                     <skos:prefLabel xml:lang="en">' . $semantic['labelEN'] . '</skos:prefLabel>
                                     <skos:exactMatch rdf:resource="'  . $semantic['exact'] . '"/>
-                                </skos:Concept>';         
+                                </skos:Concept>';
+                    if($files['thumbURL']!=''){
+                        $edmObject = '<edm:object rdf:resource="' . $files['thumbURL'] . '"/>';
+                    }
+
                 }
                 $XMLaggre='<edm:aggregatedCHO rdf:resource="#' . $itemID . '"/>
                            <edm:dataProvider>Εθνικό Θέατρο</edm:dataProvider>
                            <edm:isShownAt rdf:resource="' . $handlerURL . "/videopart/" . $itemID . '"/>
-                           <edm:isShownBy rdf:resource="' . $files['physicalFileURL'] . '"/>
-                           <edm:rights rdf:resource="https://creativecommons.org/licenses/by-nd/4.0/"/>
+                           <edm:isShownBy rdf:resource="' . $files['physicalFileURL'] . '"/>'.
+                            $edmObject .
+                           '<edm:rights rdf:resource="https://creativecommons.org/licenses/by-nd/4.0/"/>
                            <dc:rights>Εθνικό Θέατρο</dc:rights>';
                 break;
             case 'posters':
@@ -974,6 +984,7 @@ function rdf_get_item($item, $itemID){
 
                 $files=get_physical_details('poster', $itemID, $info['posterfile']);
                 
+                $thumbURLfile = '';
                 if(!empty($files)){
                     if($files['size']<1048576){
                         $displaySize=intval($files['size']/1024). ' KB';
@@ -996,11 +1007,13 @@ function rdf_get_item($item, $itemID){
                                     <skos:prefLabel xml:lang="en">' . $semantic['labelEN'] . '</skos:prefLabel>
                                     <skos:exactMatch rdf:resource="'  . $semantic['exact'] . '"/>
                                 </skos:Concept>'.$XMLextras;         
+                    $thumbURLfile = $files['thumbURL'];
                 }
                 $XMLaggre='<edm:aggregatedCHO rdf:resource="#' . $itemID . '"/>
                 <edm:dataProvider>Εθνικό Θέατρο</edm:dataProvider>
                 <edm:isShownAt rdf:resource="' . $handlerURL . "/poster/" . $itemID . '"/>
                 <edm:isShownBy rdf:resource="' . $files['physicalFileURL'] . '"/>
+                <edm:object rdf:resource="' . $thumbURLfile . '" />
                 <edm:rights rdf:resource="https://creativecommons.org/licenses/by-nd/4.0/"/>
                 <dc:rights>Εθνικό Θέατρο</dc:rights>';
                 
@@ -1420,11 +1433,11 @@ function get_physical_details($item, $itemID, $itemFile){
             break;
         case 'video':
             $physicalFile=$itemFile.'.mp4';
-            $physicalThumbFile='';
+            $physicalThumbFile=$itemFile.'.jpg';
             $PHYfullScreen=$PHYcollectionPathScreen.'/videos/'.$physicalFile;
-            $PHYfullThumb='';
+            $PHYfullThumb=$PHYcollectionPathThumb.'/thumbs/videos/'. $physicalThumbFile;
             $URLfullScreen=$URLcollectionPathScreen.'/videos/'.$physicalFile;
-            $URLfullThumb='';
+            $URLfullThumb=$URLcollectionPathThumb . '/videos/' . $physicalThumbFile;
             $sizes=get_file_size($PHYfullScreen, $PHYfullThumb);
             $result['width']=''; //width
             $result['height']='';  //height;
@@ -1443,11 +1456,11 @@ function get_physical_details($item, $itemID, $itemFile){
             break;
         case 'videopart':
             $physicalFile=$itemFile.'.mp4';
-            $physicalThumbFile='';
+            $physicalThumbFile=$itemFile.'.jpg';
             $PHYfullScreen=$PHYcollectionPathScreen.'/videos/'.$physicalFile;
-            $PHYfullThumb='';
+            $PHYfullThumb=$PHYcollectionPathThumb.'/thumbs/videos/'. $physicalThumbFile;
             $URLfullScreen=$URLcollectionPathScreen.'/videos/'.$physicalFile;
-            $URLfullThumb='';
+            $URLfullThumb=$URLcollectionPathThumb . '/videos/' . $physicalThumbFile;
             $sizes=get_file_size($PHYfullScreen, $PHYfullThumb);
             $result['width']=''; //width
             $result['height']='';  //height;
