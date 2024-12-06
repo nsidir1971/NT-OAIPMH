@@ -318,6 +318,7 @@ function rdf_get_item($item, $itemID){
                           $xmlENdescr.
                          '<dc:publisher rdf:resource="' . $NT_rdf . '" />
                           <dcterms:created>' . $playYear. '</dcterms:created>
+                          <dc:date>' . $playYear . '</dc:date>
                           <edm:type>TEXT</edm:type>';
 
                 $prgramLangs=getLangs('program', $itemID);
@@ -399,6 +400,7 @@ function rdf_get_item($item, $itemID){
                           $xmlENdescr .
                           '<dc:publisher>' . $info['pubName'] . '</dc:publisher>
                           <dcterms:issued>' . $info['pubDate'] . '</dcterms:issued> 
+                          <dc:date>' . $info['pubDate'] . '</dc:date>
                           <edm:type>TEXT</edm:type>';
 
                 $pubauthorXML=getPubAuthor($itemID);
@@ -513,7 +515,9 @@ function rdf_get_item($item, $itemID){
 
                 $xmlPhotoDate='';
                 if($info['photoDate']!=''){
-                    $xmlPhotoDate='<dc:created xml:lang="el">' . $info['photoDate'] . '</dc:created>';
+                    $xmlPhotoDate='<dc:date>' . $info['photoDate'] . '</dc:date>';
+                }else{
+                    $xmlPhotoDate='<dc:date xml:lang="el">Άγνωστη</dc:date><dcterms:created xml:lang="en">Unknown</dcterms:created>';
                 }
 
                 $XMLprov='<dc:title xml:lang="el" rdf:parseType="Literal">' . $title . '</dc:title>'.
@@ -523,7 +527,8 @@ function rdf_get_item($item, $itemID){
                           <dc:identifier>' . 'photo/' . $itemID . '</dc:identifier>
                           <dc:description xml:lang="el" rdf:parseType="Literal">' . $info['photoDescription'] . '</dc:description>'
                           . $xmlENphotodescr . $xmlPhotoDate .
-                          '<edm:type>IMAGE</edm:type>
+                          '<dc:date>' . $playYear . '</dc:date>
+                          <edm:type>IMAGE</edm:type>
                           <dc:creator xml:lang="el">' . $info['photographer'] . '</dc:creator>'
                           . $xmlENphotographer;
                 
@@ -576,7 +581,10 @@ function rdf_get_item($item, $itemID){
 
                 $xmlCreated = '';
                 if($info['hisPhotoDate']!='' and $info['hisPhotoDate']!='Χ.χ.'){
-                    $xmlCreated = '<dc:created>' . $info['hisPhotoDate'] . '</dc:created>';
+                    $xmlCreated = '<dc:date>' . $info['hisPhotoDate'] . '</dc:date>';
+                }else{
+                    $xmlCreated = '<dc:date xml:lang="el">Άγνωστη</dc:date>
+                                <dcterms:created xml:lang="en">Unknown</dcterms:created>';
                 }
 
                 $edmplace ='';
@@ -670,7 +678,7 @@ function rdf_get_item($item, $itemID){
                           <dc:identifier>' . 'sound/' . $itemID . '</dc:identifier>
                           <dc:description xml:lang="el" rdf:parseType="Literal">' . str_replace('&', '&amp;', $info['soundDescription']) . '</dc:description>'.
                           $xmlENsounddescr .
-                         '<dc:created>' . $playYear . '</dc:created>
+                         '<dc:date>' . $playYear . '</dc:date>
                           <edm:type>SOUND</edm:type>';
                 $soundType=getCategory('soundType', $info['soundTypeID']);   
                 if(!empty($soundType)){
@@ -739,7 +747,7 @@ function rdf_get_item($item, $itemID){
                 <dc:identifier>' . 'soundpart/' . $itemID . '</dc:identifier>
                 <dc:description xml:lang="el" rdf:parseType="Literal">' . str_replace('&', '&amp;', $info['soundPartTitle']) . '</dc:description>'.
                 $xmlENsoundparttitle .
-                '<dc:created>' . $playYear . '</dc:created>
+                '<dc:date>' . $playYear . '</dc:date>
                 <edm:type>SOUND</edm:type>';
                 $soundPartExt=$info['soundPart'];
                 if($soundPartExt<10){
@@ -801,7 +809,7 @@ function rdf_get_item($item, $itemID){
                           <dc:identifier>' . 'video/' . $itemID . '</dc:identifier>
                           <dc:description xml:lang="el" rdf:parseType="Literal">' . str_replace('&', '&amp;', $info['videoDescription']) . '</dc:description>'.
                           $xmlENdescr .
-                          '<dc:created>' . $playYear . '</dc:created>
+                          '<dc:date>' . $playYear . '</dc:date>
                           <edm:type>VIDEO</edm:type>';
                 
                 if($info['IsURL']==0){ //Video is NOT a URL address
@@ -869,7 +877,7 @@ function rdf_get_item($item, $itemID){
                             <dc:identifier>' . 'videopart/' . $itemID . '</dc:identifier>
                             <dc:description xml:lang="el" rdf:parseType="Literal">' . str_replace('&', '&amp;', $info['videoPartTitle']) . '</dc:description>'.
                             $xmlENdescr .
-                            '<dc:created>' . $playYear . '</dc:created>
+                            '<dc:date>' . $playYear . '</dc:date>
                             <edm:type>VIDEO</edm:type>';
                 
                 
@@ -935,7 +943,10 @@ function rdf_get_item($item, $itemID){
                 }
                 $dccreated = '';
                 if($hasplay){
-                    $dccreated='<dc:created>' . $playYear . '</dc:created>';
+                    $dccreated='<dc:date>' . $playYear . '</dc:date>';
+                }else{
+                    $dccreated='<dc:date xml:lang="el">Άγνωστη</dc:date>
+                                <dcterms:created xml:lang="en">Unknown</dcterms:created>';
                 }
                 
                 $additionalDescr=getPosterRepeatDescription($itemID);
@@ -1069,7 +1080,9 @@ function rdf_get_item($item, $itemID){
                 
                 $dccreated = '' ;
                 if($hasplay){
-                    $dccreated = '<dc:created>' . $playYear . '</dc:created>';
+                    $dccreated = '<dc:date xml:lang="el">' . $playYear . '</dc:date>';
+                }else{
+                    $dccreated = '<dc:date xml:lang="el">Άγνωστη</dc:date><dcterms:created xml:lang="en">Unknown</dcterms:created>';
                 }
 
                 $XMLprov='<dc:title xml:lang="el" rdf:parseType="Literal">' . $info['title'] . '</dc:title>
@@ -1264,8 +1277,8 @@ function get_physical_details($item, $itemID, $itemFile){
     $result=array();
     $URLcollectionPathScreen=$handlerURL.'/collections/screen';
     $PHYcollectionPathScreen=$physicalCollectionPath.'/screen';
-    $URLcollectionPathThumb=$handlerURL.'/collections/thumb';
-    $PHYcollectionPathThumb=$physicalCollectionPath.'/thumb';
+    $URLcollectionPathThumb=$handlerURL.'/collections/thumbs';
+    $PHYcollectionPathThumb=$physicalCollectionPath.'/thumbs';
     $physicalFile='';
     $physicalThumbFile='';
     $fullScreenURL='';
