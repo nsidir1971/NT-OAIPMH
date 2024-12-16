@@ -796,3 +796,16 @@ function is_true($var)
 {
     return $var == 'TRUE';
 }
+
+
+function xml_ready($text_to_be_inner_value){
+    //&
+    $output = preg_replace('/&\s+/u', '&amp; ', $text_to_be_inner_value);
+    //"
+    $output = preg_replace('/"/u', '&quot;', $output);
+    //<
+    $output = preg_replace('/</u', '&lt;', $output);
+    //>
+    $output = preg_replace('/>/u', '&gt;', $output);
+    return $output;
+}
