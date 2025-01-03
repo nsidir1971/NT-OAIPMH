@@ -313,7 +313,7 @@ function rdf_get_item($item, $itemID){
                 
                 $XML_DC_Subject = '<dc:subject xml:lang="el">Θεατρική παράσταση</dc:subject>
                                    <dc:subject xml:lang="el">Πολιτιστική επικοινωνία</dc:subject>' . $extra_work_subjects;
-                $title='Πρόγραμμα για την παράσταση &quot;' . fix_title($info['playTitle']). '&quot; ('.$playYear.')';
+                $title='Πρόγραμμα για την παράσταση &quot;' . xml_ready(fix_title($info['playTitle'])). '&quot; ('.$playYear.')';
                 $xmlENtitle='';
                 if( $info['playTitle']!=$info['playTitleEN'] and $info['playTitleEN']!=''){
                     $titleEN='Program for the play &quot;' . xml_ready(fix_title($info['playTitleEN'])). '&quot; ('.$playYear.')';
@@ -323,7 +323,7 @@ function rdf_get_item($item, $itemID){
                 $descr=getProgramDescription($itemID);
                 $xmlENdescr='';
                 if($descr['el']!=$descr['en'] AND $descr['en']!=''){
-                    $xmlENdescr='<dc:description xml:lang="en" rdf:parseType="Literal">' . $descr['en'] . '</dc:description>';
+                    $xmlENdescr='<dc:description xml:lang="en" rdf:parseType="Literal">' . xml_ready($descr['en']) . '</dc:description>';
                 }
                 
                 $XMLprov='<dc:title xml:lang="el">' . $title . '</dc:title>'.
@@ -332,7 +332,7 @@ function rdf_get_item($item, $itemID){
                           <dc:identifier>' . $handlerURL . "/program/" . $itemID . '</dc:identifier>
                           <dc:identifier>' . 'program/' . $itemID . '</dc:identifier>'.
                           $XML_DC_Subject.
-                          '<dc:description xml:lang="el" rdf:parseType="Literal">' . $descr['el'] . '</dc:description>'.
+                          '<dc:description xml:lang="el" rdf:parseType="Literal">' . xml_ready($descr['el']) . '</dc:description>'.
                           $xmlENdescr. 
                          '<dc:publisher rdf:resource="' . $NT_rdf . '" />' .
                          $xmlRelation .
@@ -438,10 +438,10 @@ function rdf_get_item($item, $itemID){
 
                     $xmlENpubmediumdescr='';
                     if($pubMedium['descr']!=$pubMedium['descrEN'] AND $pubMedium['descrEN']!=''){
-                        $xmlENpubmediumdescr='<skos:prefLabel xml:lang="en">' . $pubMedium['descrEN'] . '</skos:prefLabel>';
+                        $xmlENpubmediumdescr='<skos:prefLabel xml:lang="en">' . xml_ready($pubMedium['descrEN']) . '</skos:prefLabel>';
                     }
                     $XMLextras.='<skos:Concept rdf:about="' . $pubMedium['lexiconURL'] . '">
-                                    <skos:prefLabel xml:lang="el">' . $pubMedium['descr'] . '</skos:prefLabel>'
+                                    <skos:prefLabel xml:lang="el">' . xml_ready($pubMedium['descr']) . '</skos:prefLabel>'
                                     . $xmlENpubmediumdescr .
                                  '</skos:Concept>';
                 }
@@ -453,10 +453,10 @@ function rdf_get_item($item, $itemID){
 
                     $xmlENpubtype='';
                     if($pubType['descr']!=$pubType['descrEN'] AND $pubType['descrEN']!=''){
-                        $xmlENpubtype='<skos:prefLabel xml:lang="en">' . $pubType['descrEN'] . '</skos:prefLabel>';
+                        $xmlENpubtype='<skos:prefLabel xml:lang="en">' . xml_ready($pubType['descrEN']) . '</skos:prefLabel>';
                     }
                     $XMLextras.='<skos:Concept rdf:about="' . $pubType['lexiconURL'] . '">
-                                    <skos:prefLabel xml:lang="el">' . $pubType['descr'] . '</skos:prefLabel>'
+                                    <skos:prefLabel xml:lang="el">' . xml_ready($pubType['descr']) . '</skos:prefLabel>'
                                   . $xmlENpubtype .  
                                  '</skos:Concept>';
                 }
@@ -531,7 +531,7 @@ function rdf_get_item($item, $itemID){
 
                 $xmlENphotodescr='';
                 if($info['photoDescription']!=$info['photoDescriptionEN'] AND $info['photoDescriptionEN']!=''){
-                    $xmlENphotodescr='<dc:description xml:lang="en" rdf:parseType="Literal">' . $info['photoDescriptionEN'] . '</dc:description>';
+                    $xmlENphotodescr='<dc:description xml:lang="en" rdf:parseType="Literal">' . xml_ready($info['photoDescriptionEN']) . '</dc:description>';
                 }
 
                 
@@ -553,7 +553,7 @@ function rdf_get_item($item, $itemID){
                           <dc:identifier>' . $handlerURL . "/photo/" . $itemID . '</dc:identifier>
                           <dc:identifier>' . 'photo/' . $itemID . '</dc:identifier>'.
                           $XML_DC_Subject. $xmlRelation .
-                          '<dc:description xml:lang="el" rdf:parseType="Literal">' . $info['photoDescription'] . '</dc:description>'
+                          '<dc:description xml:lang="el" rdf:parseType="Literal">' . xml_ready($info['photoDescription']) . '</dc:description>'
                           . $xmlENphotodescr . $xmlPhotoDate .
                           '<dc:date>' . $playYear . '</dc:date>
                           <edm:type>IMAGE</edm:type>
@@ -611,7 +611,7 @@ function rdf_get_item($item, $itemID){
 
                 $xmlENhistphotodescr='';
                 if($info['hisPhotoDescription']!=$info['hisPhotoDescriptionEN'] AND $info['hisTitleEN']!=''){
-                    $xmlENhistphotodescr='<dc:description xml:lang="en"  rdf:parseType="Literal">' . $info['hisPhotoDescriptionEN'] . '</dc:description>';
+                    $xmlENhistphotodescr='<dc:description xml:lang="en"  rdf:parseType="Literal">' . xml_ready($info['hisPhotoDescriptionEN']) . '</dc:description>';
                 }
 
                 $xmlCreated = '';
@@ -629,10 +629,10 @@ function rdf_get_item($item, $itemID){
                     $edmplace='<dcterms:spatial rdf:resource="' . $placeGeoURL . '" />';
                     $xmlPlaceEN = '';
                     if($info['hisPlaceEN']!='' and $info['hisPlaceEN']!=$info['hisPlace']){
-                        $xmlPlaceEN = '<skos:prefLabel xml:lang="en">' . $info['hisPlaceEN'] . '</skos:prefLabel>';
+                        $xmlPlaceEN = '<skos:prefLabel xml:lang="en">' . xml_ready($info['hisPlaceEN']) . '</skos:prefLabel>';
                     }
                     $xmledmPlace='<edm:Place rdf:about="' . $placeGeoURL . '">
-                                    <skos:prefLabel xml:lang="el">' . $info['hisPlace'] . '</skos:prefLabel>' .
+                                    <skos:prefLabel xml:lang="el">' . xml_ready($info['hisPlace']) . '</skos:prefLabel>' .
                                     $xmlPlaceEN .
                                 '</edm:Place>';
                 }
@@ -643,7 +643,7 @@ function rdf_get_item($item, $itemID){
                           <dc:identifier>' . $handlerURL . "/histphoto/" . $itemID . '</dc:identifier>
                           <dc:identifier>' . 'hisphoto/' . $itemID . '</dc:identifier>'.
                           $XML_DC_Subject. $xmlRelation .
-                          '<dc:description xml:lang="el" rdf:parseType="Literal">' . $info['hisPhotoDescription'] . '</dc:description>'
+                          '<dc:description xml:lang="el" rdf:parseType="Literal">' . xml_ready($info['hisPhotoDescription']) . '</dc:description>'
                           . $xmlENhistphotodescr . $xmlCreated . 
                           '<edm:type>IMAGE</edm:type>' . $edmplace;
                 $photographer=getCategory('hisPhotosPhotographer', $info['hisPhotoPhotographerID']);
@@ -1027,7 +1027,7 @@ function rdf_get_item($item, $itemID){
                 $additionalDescr=getPosterRepeatDescription($itemID);
                 $xmlposterdescr='';
                 if($hasplay){
-                    $descr='Αφίσα της παράστασης &quot;'.xml_ready(fix_title($info['playTitle'])). '&quot; ('.$playYear.') '. $additionalDescr['el'];
+                    $descr='Αφίσα της παράστασης &quot;'.xml_ready(fix_title($info['playTitle'])). '&quot; ('.$playYear.') '. xml_ready($additionalDescr['el']);
                     $xmlposterdescr='<dc:description xml:lang="el" rdf:parseType="Literal">' . $descr . '</dc:description>';
                 }else{
                     $xmlposterdescr='<dc:description xml:lang="el" rdf:parseType="Literal">' . xml_ready($info['posterTitleEN']) . '</dc:description>';
@@ -1179,8 +1179,8 @@ function rdf_get_item($item, $itemID){
                             <dc:type rdf:resource="' . $semanticTypes['costumes']['concept'] . '" />
                             <dc:identifier>' . $handlerURL . "/costume/" . $itemID . '</dc:identifier>
                             <dc:identifier>' . 'poster/' . $itemID . '</dc:identifier>
-                            <dc:description xml:lang="el" rdf:parseType="Literal">' . $info['description'] . '</dc:description>
-                            <dc:description xml:lang="en" rdf:parseType="Literal">' . $info['descriptionEN'] . '</dc:description>'.
+                            <dc:description xml:lang="el" rdf:parseType="Literal">' . xml_ready($info['description']) . '</dc:description>
+                            <dc:description xml:lang="en" rdf:parseType="Literal">' . xml_ready($info['descriptionEN']) . '</dc:description>'.
                             $dccreated .
                             '<edm:type>IMAGE</edm:type>'.$creatorsXML . $XML_DC_Subject . $xmlRelation . $XMLprov;
                 
@@ -1189,6 +1189,7 @@ function rdf_get_item($item, $itemID){
                 if($info['digitizeMethod']==1){
                     $files=get_physical_details('costume3d', $itemID, $info['costumeFile']);
                     if(!empty($files)){
+                        $thumbfile = $files['thumbURL'];
                         if($files['size']<1048576){
                             $displaySize=intval($files['size']/1024). ' KB';
                         }elseif($files['size']>1048576 and $files['size']<1073741824){
@@ -1209,7 +1210,8 @@ function rdf_get_item($item, $itemID){
                                         <skos:prefLabel xml:lang="el">' . $semantic['labelGR'] . '</skos:prefLabel>
                                         <skos:prefLabel xml:lang="en">' . $semantic['labelEN'] . '</skos:prefLabel>
                                         <skos:exactMatch rdf:resource="'  . $semantic['exact'] . '"/>
-                                    </skos:Concept>'.$XMLextras. $xmlSkosRelation;         
+                                    </skos:Concept>'.$XMLextras. $xmlSkosRelation; 
+                        $edmobject = '<edm:object rdf:resource="' . $thumbfile . '"/>';                    
                     }
 
                 }else{
@@ -1619,15 +1621,17 @@ function get_physical_details($item, $itemID, $itemFile){
             $physicalFile=$itemFile.'.gltf';
             $PHYfullScreen=$PHYcollectionPathScreen.'/costumes/'.$physicalFile;
             $URLfullScreen=$URLcollectionPathScreen.'/costumes/'.$physicalFile;
-            $sizes=get_file_size($PHYfullScreen, '');
+            $PHYfullThumb=$PHYcollectionPathThumb.'/costumes/'. $itemFile.'_tn.png';
+            $URLfullThumb=$URLcollectionPathThumb.'/costumes/'.$itemFile.'_tn.png';
+            $sizes=get_file_size($PHYfullScreen, $PHYfullThumb);
 
             $result['width']=''; //width
             $result['height']='';  //height;
             $result['mime']='model/gltf+json';  ///$type;
             $result['size']=$sizes['screenFile'];
-            $result['sizeThumb']='';  
+            $result['sizeThumb']=$sizes['thumbFile'];  
             $result['physicalFileURL']=$URLfullScreen;
-            $result['thumbURL']=$URLfullScreen;
+            $result['thumbURL']=$URLfullThumb;
             break;
         default:
             die('wrong case ->get_physical_details');
