@@ -11,7 +11,7 @@ $NT_rdf='https://id.loc.gov/authorities/names/n90693693';
 
 
 $poplerpath="C:\poppler-24.08.0\Library\bin";
-$URL_site_collections="http://194.177.217.106/collections";
+$URL_site_collections="https://www.nt-archive.gr/collections";
 
 
 $semanticTypes=array(
