@@ -9,8 +9,8 @@ include_once 'class.php';
 include_once 'util.php';
 require_once dirname(__FILE__) .  '/vendor/getid3/getid3.php';
 
-//$oaiURL = 'https://www.nt-archive.gr/oai-pmh';
-$oaiURL = 'https://194.177.217.106/oai-pmh';
+$oaiURL = 'https://www.nt-archive.gr/oai-pmh';
+//$oaiURL = 'https://194.177.217.106/oai-pmh';
 $error = '';
 $hasrequestError = false;
 $xmlirecs = '';
