@@ -185,6 +185,9 @@ function getIdentifiers($from, $until, $set){
                 UNION
                 select costumeID AS itemID, (CASE WHEN modified IS NOT NULL THEN modified ELSE created END) AS timestamp, 'costumes' AS setgroup
                 FROM costumes WHERE published=1
+                UNION 
+                SELECT playID AS itemID, (CASE WHEN modified IS NOT NULL THEN modified ELSE created END) AS timestamp, 'plays' AS setgroup
+                FROM plays WHERE published=1
                 )
             select * from ds $sqlwhere
             ORDER BY  timestamp, setgroup";
@@ -242,6 +245,9 @@ function getIdentifierTimestamp($set, $identID){
             $fldid='costumeID';
             $tbl='costumes';
             break;
+        case 'plays':
+            $fldid='playID';
+            $tbl='plays';
     }
     $sql = "SELECT (CASE WHEN modified IS NOT NULL THEN modified ELSE created END) AS timestamp
                 FROM $tbl WHERE $fldid=:itid AND published=1";
@@ -273,6 +279,10 @@ function rdf_get_item($item, $itemID){
     global $NT_rdf;
     global $semanticTypes;
     global $URL_site_collections;
+    global $config_play_genre_el;
+    global $config_play_genre_en;
+    global $config_play_type_el;
+    global $config_play_type_en;
     $rdf='';
     $XMLprov='';
     $XMLaggre='';
@@ -291,7 +301,7 @@ function rdf_get_item($item, $itemID){
         
         $xmlRelation = '';
         $xmlSkosRelation = '';
-        if($info['playID']!='' and is_numeric($info['playID'])){
+        if($info['playID']!='' and is_numeric($info['playID']) and $item!='plays'){
             $hasplay=true;
             $playYear=getPlayYear_v2($info['playID']);
             $extra_work_subjects = get_xml_work_subjects($info['playID']);
@@ -1257,6 +1267,52 @@ function rdf_get_item($item, $itemID){
                             <dc:rights>Εθνικό Θέατρο</dc:rights>';
 
                 break;
+            case 'plays':
+                $xmlENtitle='';
+                if($info['playTitle']!=$info['playTitleEN'] and $info['playTitleEN']!=''){
+                    $xmlENtitle='<dc:title xml:lang="en">' . xml_ready(fix_title($info['playTitleEN'])) . '</dc:title>';
+                }
+                $XMLcompany='';
+                if($info['description']!=''){
+                    $XMLcompany = '<dc:subject xml:lang="el">' . xml_ready($info['description']) . '</dc:subject>';
+                    if($info['descriptionEN']!='' AND $info['descriptionEN']!=$info['description']){
+                        $XMLcompany .= '<dc:subject xml:lang="en">' . xml_ready($info['descriptionEN']) . '</dc:subject>';
+                    }
+                }
+
+                $xmlPlayGenre = '';
+                if(!is_null($info['playGenreID']) and $info['playGenreID']!=''){
+                    $xmlPlayGenre = '<dc:subject xml:lang="el">' . $config_play_genre_el[$info['playGenreID']] . '</dc:subject>
+                                    <dc:subject xml:lang="en">' . $config_play_genre_en[$info['playGenreID']] . '</dc:subject>';
+                }
+
+                $xmlPlayType = '';
+                if(!is_null($info['playTypeID']) and $info['playTypeID']!=''){
+                    $xmlPlaytype = '<dc:subject xml:lang="el">' . $config_play_type_el[$info['playTypeID']] . '</dc:subject>
+                                    <dc:subject xml:lang="en">' . $config_play_type_en[$info['playTypeID']] . '</dc:subject>';
+                }
+
+                $xmlContributors=get_xml_play_contributors($itemID);
+
+                $XMLprov = '<dc:title xml:lang="el">' . xml_ready($info['playTitle']). '</dc:title>'.
+                $xmlENtitle.
+                '<dc:type rdf:resource="http://semantics.gr/authorities/ekt-item-types/Play"/>
+                <dc:identifier>' . $handlerURL . '/play/' . $itemID . '</dc:identifier>
+                <dc:identifier>play/'. $itemID . '</dc:identifier>'.
+                $XMLcompany . $xmlPlayGenre. $xmlPlayType . $extra_work_subjects . $xmlContributors. 
+                '<dc:date>' . $info['playYear'] . '</dc:date>';
+                $XMLaggre='<edm:aggregatedCHO rdf:resource="#' . $itemID . '"/>
+                <edm:dataProvider>Εθνικό Θέατρο</edm:dataProvider>
+                <edm:isShownAt rdf:resource="' . $handlerURL . "/play/" . $itemID . '"/>
+                <edm:rights rdf:resource="https://creativecommons.org/licenses/by-nd/4.0/"/>
+                <dc:rights>Εθνικό Θέατρο</dc:rights>';
+
+                $XMLextras = '<skos:Concept rdf:about="http://semantics.gr/authorities/ekt-item-types/Play">
+                                <skos:prefLabel xml:lang="el">Θεατρική παράσταση</skos:prefLabel>
+                                <skos:prefLabel xml:lang="en">Play</skos:prefLabel>
+                                <skos:exactMatch rdf:resource="http://vocab.getty.edu/aat/300201028"/>
+                              </skos:Concept>';
+                break;
             default:
                 die('wrong case -> rdf_get_item');                
         }
@@ -1277,9 +1333,11 @@ function rdf_get_item($item, $itemID){
         $aggre='<ore:Aggregation rdf:about="'.$repo_url.'/'.$item.'/'.$itemID.'">'.$XMLaggre.'</ore:Aggregation>';
 
         //webResource section
-       
-        if($item!='video'){
-            $webRes='<edm:WebResource rdf:about="' . $files['physicalFileURL'] . '">'. $XMLweb .'</edm:WebResource>';
+        
+        if($item!='videos'){
+            if($item!='plays'){
+                $webRes='<edm:WebResource rdf:about="' . $files['physicalFileURL'] . '">'. $XMLweb .'</edm:WebResource>';
+            }
         }else{ 
             if($info['IsURL']==0){
                 $webRes='<edm:WebResource rdf:about="'. $info['videoFile'].'">'. $XMLweb .'</edm:WebResource>';
@@ -1342,6 +1400,10 @@ function check_item_availability($item, $itemID){
             $tbl="costumes";
             $fldid="costumeID";
             break;
+        case 'plays':
+            $tbl="plays";
+            $fldid="playID";
+            break;    
         default:
             die('wrong case ->check_item_availability');                
     }
@@ -1793,6 +1855,22 @@ function get_item_details($item, $itemID){
                 WHERE c.costumeID=:itid
             ";            
             break;
+        case 'plays':
+            $sql="SELECT p.playID, p.playTitle, c.description, p.playTypeID, p.playGenreID,
+            (CASE WHEN (trans.tr_text is null OR trans.tr_text='') THEN p.playTitle ELSE trans.tr_text END) as playTitleEN,
+			(CASE WHEN (t2.tr_text is null OR t2.tr_text='') THEN c.description ELSE t2.tr_text END) as descriptionEN,
+            (CASE WHEN MIN(IIF(r.repeatDateStart<>'', YEAR(r.repeatDateStart), ''))>0 then MIN(IIF(r.repeatDateStart<>'', YEAR(r.repeatDateStart), '')) ELSE MIN(r.repeatPeriod1) END) AS playYear
+            FROM plays p
+            INNER JOIN repeats r ON r.playID = p.playID
+			LEFT JOIN companies c ON c.companyID=p.companyID
+            LEFT JOIN trans ON trans.field_id=p.playID AND trans.tbl_name='plays' and trans.field_name='playTitle'
+			LEFT JOIN trans t2 ON t2.field_id=c.companyID AND t2.tbl_name='companies' and trans.field_name='description'
+			WHERE p.playID=:itid
+			GROUP BY p.playID, playTitle, c.description,  p.playTypeID, p.playGenreID,
+			(CASE WHEN (trans.tr_text is null OR trans.tr_text='') THEN p.playTitle ELSE trans.tr_text END), 
+			(CASE WHEN (t2.tr_text is null OR t2.tr_text='') THEN c.description ELSE t2.tr_text END)
+            ";
+            break;    
         default:
             die('wrong case -> get_item_details');                
     }
@@ -2195,6 +2273,54 @@ function getCostumeCreator($personID){
     }
 }
 
+
+function get_xml_play_contributors($playID){
+    global $dbh;
+    $output = '';
+    try{
+        //Authors
+        $sql = "SELECT p.personName FROM people p 
+                INNER JOIN authors a ON a.personID = p.personID 
+                INNER JOIN playWorks pw ON pw.workID = a.workID
+                WHERE pw.playID=:plid
+                ORDER BY a.authorRank";
+        $stmt=$dbh->prepare($sql);
+        $stmt->bindParam(":plid", $playID, PDO::PARAM_INT);        
+        $stmt->execute();
+        $authors=$stmt->fetchAll(PDO::FETCH_ASSOC);
+        if(!empty($authors)){
+            foreach($authors as $singleauthor){
+                $nameAuthor=fix_person_name($singleauthor['personName']);
+                $output.= '<dc:contributor xml:lang="el" rdf:parseType="Literal">' . $nameAuthor . ' (Συγγραφέας)</dc:contributor>';
+            }
+        }
+        
+        //Contributors
+        $sql2="SELECT p.personName, ct.descr FROM people p
+               INNER JOIN contributors c ON c.personID=p.personID
+               INNER JOIN contributorTypes ct ON ct.contriTypeID = c.contriTypeID
+               WHERE c.playID=:plid
+               ORDER BY c.contributorRank";
+        $stmt=$dbh->prepare($sql2);
+        $stmt->bindParam(":plid", $playID, PDO::PARAM_INT);        
+        $stmt->execute();       
+        $contributors=$stmt->fetchAll(PDo::FETCH_ASSOC);
+        if(!empty($contributors)){
+            foreach($contributors as $single){
+                $nameContributor=fix_person_name($single['personName']);
+                $profession=$single['descr'];
+                $output.= '<dc:contributor xml:lang="el" rdf:parseType="Literal">' . $nameContributor . ' (' . $profession . ')</dc:contributor>';
+            }
+        }
+        
+        return $output;
+
+    }catch(PDOException $err){
+        echo $err->getMessage();
+    }
+
+
+}
 
 /**
  * Calling an RESTFull API function
