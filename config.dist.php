@@ -34,6 +34,35 @@ $semanticTypes=array(
     'posters' => array('labelGR'=>'Αφίσα','labelEN'=>'Poster','concept'=>'https://semantics.gr/authorities/ekt-item-types/afisa', 'exact'=>'https://vocabularies.unesco.org/thesaurus/concept1604',
                     'set'=>'posters' ,'setName'=>'Αφίσες','setDescription'=>'Συλλογή αφισών από θεατρικές παραστάσεις', 'setDescriptionEN'=>'Collection of posters from theatrical plays'),
     'costumes' => array('labelGR'=>'Θεατρικό κοστούμι','labelEN'=>'Costume','concept'=>'https://semantics.gr/authorities/craft-item-types/941945856', 'exact'=>'https://vocabularies.unesco.org/thesaurus/concept5474',
-                    'set'=>'costumes' ,'setName'=>'Κοστούμια','setDescription'=>'Συλλογή θεατρικών κοστουμιών από παραστάσεις', 'setDescriptionEN'=>'Collection of theatrical costumes from plays')
+                    'set'=>'costumes' ,'setName'=>'Κοστούμια','setDescription'=>'Συλλογή θεατρικών κοστουμιών από παραστάσεις', 'setDescriptionEN'=>'Collection of theatrical costumes from plays'),
+    'plays' => array('labelGR'=>'Θεατρική παράσταση','labelEN'=>'Theatrical play','concept'=>'http://semantics.gr/authorities/ekt-item-types/Play', 'exact'=>'http://vocab.getty.edu/aat/300201028',
+                    'set'=>'plays' ,'setName'=>'Παραστάσεις','setDescription'=>'Συλλογή θεατρικών παραστάσεεων', 'setDescriptionEN'=>'Collection of theatrical plays')                
+);
+
+$config_play_genre_el = array(
+    "0" => "Αρχαίο δράμα: Τραγωδία",
+    "1" => "Μιούζικαλ",
+    "2" => "Πρόζα με τραγούδια",
+    "3" => "Live streaming",
+);
+
+$config_play_genre_en = array(
+    "0" => "Ancient drama: Tragedy",
+    "1" => "Musical",
+    "2" => "Prose with songs",
+    "3" => "Live streaming",
+);
+
+$config_play_type_el = array(
+    "0" => "Ενιαία παράσταση",
+    "1" => "Δραματουργική σύνθεση",
+    "2" => "Σύνθεση"
+);
+
+
+$config_play_type_en = array(
+    "0" => "Single show",
+    "1" => "Dramatic composition",
+    "2" => "Composition"
 );
 ?>
