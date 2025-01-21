@@ -393,10 +393,10 @@ function rdf_get_item($item, $itemID){
                                     <skos:prefLabel xml:lang="en">' . $semanticTypes['programs']['labelEN'] . '</skos:prefLabel>
                                     <skos:exactMatch rdf:resource="'  . $semanticTypes['programs']['exact'] . '"/>
                                 </skos:Concept>
-                                <skos:Agent rdf:about="' . $NT_rdf . '">
+                                <edm:Agent rdf:about="' . $NT_rdf . '">
                                     <skos:prefLabel xml:lang="el">Εθνικό Θέατρο</skos:prefLabel>
                                     <skos:prefLabel xml:lang="en">National Theatre</skos:prefLabel>
-                                </skos:Agent>' . $xmlSkosRelation;         
+                                </edm:Agent>' . $xmlSkosRelation;         
                 }    
                 $XMLaggre='<edm:aggregatedCHO rdf:resource="#' . $itemID . '"/>
                 <edm:dataProvider>Εθνικό Θέατρο</edm:dataProvider>
@@ -512,10 +512,10 @@ function rdf_get_item($item, $itemID){
                                     <skos:prefLabel xml:lang="en">' . $semanticTypes['publications']['labelEN'] . '</skos:prefLabel>
                                     <skos:exactMatch rdf:resource="'  . $semanticTypes['publications']['exact'] . '"/>
                                 </skos:Concept>
-                                <skos:Agent rdf:about="' . $NT_rdf . '">
+                                <edm:Agent rdf:about="' . $NT_rdf . '">
                                     <skos:prefLabel xml:lang="el">Εθνικό Θέατρο</skos:prefLabel>
                                     <skos:prefLabel xml:lang="en">National Theatre</skos:prefLabel>
-                                </skos:Agent>' . $xmlSkosRelation;         
+                                </edm:Agent>' . $xmlSkosRelation;         
                 }   
                 $XMLaggre='<edm:aggregatedCHO rdf:resource="#' . $itemID . '"/>
                     <edm:dataProvider>Εθνικό Θέατρο</edm:dataProvider>
