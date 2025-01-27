@@ -1294,7 +1294,7 @@ function rdf_get_item($item, $itemID){
 
                 $xmlContributors=get_xml_play_contributors($itemID);
 
-                $XMLprov = '<dc:title xml:lang="el">' . xml_ready($info['playTitle']). '</dc:title>'.
+                $XMLprov = '<dc:title xml:lang="el">' . xml_ready(fix_title($info['playTitle'])). '</dc:title>'.
                 $xmlENtitle.
                 '<dc:type rdf:resource="http://semantics.gr/authorities/ekt-item-types/Play"/>
                 <dc:identifier>' . $handlerURL . '/play/' . $itemID . '</dc:identifier>
