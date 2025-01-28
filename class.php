@@ -1909,19 +1909,19 @@ function get_xml_work_subjects($playID){
         FROM worksOrigins wo
         INNER JOIN worksGenreOrigin wgo on wgo.workGenreOriginID = wo.workOriginID
         LEFT JOIN trans ON trans.field_id=wgo.workGenreOriginID AND trans.tbl_name='worksGenreOrigin' and trans.field_name='descr'
-        WHERE wo.workID in (SELECT workID FROM playWorks WHERE playID = :pid1)
+        WHERE wo.workID in (SELECT ext1.workID FROM playWorks ext1 INNER JOIN works in1 ON in1.workID=ext1.workID WHERE ext1.playID = :pid1 and in1.published=1)
         UNION
         select wgo.descr as subjectText, (CASE WHEN (trans.tr_text is null OR trans.tr_text='') THEN wgo.descr ELSE trans.tr_text END) as subjectTextEN
         FROM worksPeriods wo
         INNER JOIN worksGenrePeriod wgo on wgo.workGenrePeriodID = wo.workPeriodID
         LEFT JOIN trans ON trans.field_id=wgo.workGenrePeriodID AND trans.tbl_name='worksGenrePeriod' and trans.field_name='descr'
-        WHERE wo.workID in (SELECT workID FROM playWorks WHERE playID = :pid2)
+        WHERE wo.workID in (SELECT ext2.workID FROM playWorks ext2 INNER JOIN works in2 ON in2.workID=ext2.workID WHERE ext2.playID = :pid2 and in2.published=1)
         UNION
         select wgo.descr as subjectText, (CASE WHEN (trans.tr_text is null OR trans.tr_text='') THEN wgo.descr ELSE trans.tr_text END) as subjectTextEN
         FROM worksTypes wo
         INNER JOIN worksGenreType wgo on wgo.workGenreTypeID = wo.workTypeID
         LEFT JOIN trans ON trans.field_id=wgo.workGenreTypeID AND trans.tbl_name='worksGenreType' and trans.field_name='descr'
-        WHERE wo.workID in (SELECT workID FROM playWorks WHERE playID = :pid3)";
+        WHERE wo.workID in (SELECT ext3.workID FROM playWorks ext3 INNER JOIN works in3 ON in3.workID=ext3.workID WHERE ext3.playID = :pid3 and in3.published=1)";
     try{
         $stmt=$dbh->prepare($sql);
         $stmt->bindParam(":pid1", $playID, PDO::PARAM_INT);
@@ -2146,7 +2146,7 @@ function getPubAuthor($pubID){
         $sql="SELECT TOP 1 p.personName, pa.pubAuthorRank, (CASE WHEN (trans.tr_text is null OR trans.tr_text='') THEN p.personName ELSE trans.tr_text END) as personNameEN  FROM people p 
               INNER JOIN pubAuthors pa ON pa.personID=p.personID 
               LEFT JOIN trans ON trans.tbl_name='people' and trans.field_name='personName' and trans.field_id=pa.personID
-              WHERE pa.pubID=:pid
+              WHERE pa.pubID=:pid and p.published=1
               ORDER BY pa.pubAuthorRank";
         $stmt=$dbh->prepare($sql);
         $stmt->bindParam(":pid", $pubID, PDO::PARAM_INT);
@@ -2201,7 +2201,7 @@ function getPosterRepeatDescription($posterID){
             INNER JOIN organizations o ON o.orgID=ro.orgID
             INNER JOIN trans ON trans.tbl_name='organizations' AND trans.field_id=ro.orgID AND trans.field_name='orgName' AND trans.lang='en'
             INNER JOIN trans  t1 ON t1.tbl_name='organizations' AND t1.field_id=ro.orgID AND t1.field_name='orgCity' AND trans.lang='en'
-            where pr.posterID=:pid";
+            where pr.posterID=:pid AND r.published=1";
 
         $stmt=$dbh->prepare($sql);
         $stmt->bindParam(":pid", $posterID, PDO::PARAM_INT);
@@ -2243,7 +2243,7 @@ function getPosterCreators($posterID){
             FROM postersCreators pc
             INNER JOIN people pe ON pe.personID=pc.personID
             INNER JOIN trans ON trans.field_id=pe.personID AND trans.tbl_name='people' AND trans.field_name='personName' AND trans.lang='en'
-            WHERE pc.posterID=:pid";
+            WHERE pc.posterID=:pid AND pe.published=1";
         $stmt=$dbh->prepare($sql);
         $stmt->bindParam(":pid", $posterID, PDO::PARAM_INT);
         $stmt->execute();
@@ -2262,7 +2262,7 @@ function getCostumeCreator($personID){
             (CASE WHEN (trans.tr_text is null OR trans.tr_text='') THEN pe.personName ELSE trans.tr_text END) as personNameEN  
             FROM people pe
             INNER JOIN trans ON trans.field_id=pe.personID AND trans.tbl_name='people' AND trans.field_name='personName' AND trans.lang='en'
-            WHERE pe.personID=:pid";
+            WHERE pe.personID=:pid AND pe.published=1";
         $stmt=$dbh->prepare($sql);
         $stmt->bindParam(":pid", $personID, PDO::PARAM_INT);
         $stmt->execute();
@@ -2282,7 +2282,8 @@ function get_xml_play_contributors($playID){
         $sql = "SELECT p.personName FROM people p 
                 INNER JOIN authors a ON a.personID = p.personID 
                 INNER JOIN playWorks pw ON pw.workID = a.workID
-                WHERE pw.playID=:plid
+                INNER JOIN works w ON w.workID = pw.workID
+                WHERE pw.playID=:plid AND w.published=1
                 ORDER BY a.authorRank";
         $stmt=$dbh->prepare($sql);
         $stmt->bindParam(":plid", $playID, PDO::PARAM_INT);        
@@ -2298,8 +2299,9 @@ function get_xml_play_contributors($playID){
         //Contributors
         $sql2="SELECT p.personName, ct.descr FROM people p
                INNER JOIN contributors c ON c.personID=p.personID
+               INNER JOIN works w ON w.workID = c.workID
                INNER JOIN contributorTypes ct ON ct.contriTypeID = c.contriTypeID
-               WHERE c.playID=:plid
+               WHERE c.playID=:plid AND w.published=1
                ORDER BY c.contributorRank";
         $stmt=$dbh->prepare($sql2);
         $stmt->bindParam(":plid", $playID, PDO::PARAM_INT);        
