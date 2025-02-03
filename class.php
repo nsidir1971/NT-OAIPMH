@@ -1184,7 +1184,6 @@ function rdf_get_item($item, $itemID){
                     $dccreated = '<dc:date xml:lang="el">Άγνωστη</dc:date><dcterms:created xml:lang="en">Unknown</dcterms:created>';
                 }
                 $xmlCostumeTitleEN='';
-                $xmlCostumeTitle=xml_ready($info['title']);
                 if($info['titleEN']!='' and $info['titleEN']!=$info['title']){
                     $xmlCostumeTitleEN='<dc:title xml:lang="en" rdf:parseType="Literal">' . xml_ready($info['titleEN']) . '</dc:title>';
                 }
@@ -1194,6 +1193,11 @@ function rdf_get_item($item, $itemID){
                 if($info['descriptionEN']!='' and $info['descriptionEN']!=$info['description']){
                     $xmlCostumeDescrEN='<dc:description xml:lang="en" rdf:parseType="Literal">' . xml_ready($info['descriptionEN']) . '</dc:description>';
                 }
+                
+                $edmType='IMAGE';
+                if($info['digitizeMethod']==1){
+                    $edmType='3D';
+                }
 
                 $XMLprov='<dc:title xml:lang="el" rdf:parseType="Literal">' . xml_ready($info['title']) . '</dc:title>'.
                             $xmlCostumeTitleEN .
@@ -1202,7 +1206,7 @@ function rdf_get_item($item, $itemID){
                             <dc:identifier>' . 'poster/' . $itemID . '</dc:identifier>
                             <dc:description xml:lang="el" rdf:parseType="Literal">' . xml_ready($info['description']) . '</dc:description>'.
                             $xmlCostumeDescrEN. $dccreated .
-                            '<edm:type>IMAGE</edm:type>'.$creatorsXML . $XML_DC_Subject . $xmlRelation . $XMLprov;
+                            '<edm:type>'. $edmType .'</edm:type>'.$creatorsXML . $XML_DC_Subject . $xmlRelation . $XMLprov;
                 
                 $thumbfile = '';
                 $edmobject = '';
@@ -1264,14 +1268,14 @@ function rdf_get_item($item, $itemID){
                                         <skos:prefLabel xml:lang="en">' . $semantic['labelEN'] . '</skos:prefLabel>
                                         <skos:exactMatch rdf:resource="'  . $semantic['exact'] . '"/>
                                     </skos:Concept>'.$XMLextras . $xmlSkosRelation; 
-                        $edmobject = '<edm:object rdf:resource="' . $thumbfile . '"/>';
+                        $edmobject = '<edm:object rdf:resource="' . str_replace(' ', '%20', $thumbfile) . '"/>';
                     }
                 }
                 
                 $XMLaggre='<edm:aggregatedCHO rdf:resource="#' . $itemID . '"/>
                             <edm:dataProvider>Εθνικό Θέατρο</edm:dataProvider>
                             <edm:isShownAt rdf:resource="' . $handlerURL . "/costume/" . $itemID . '"/>
-                            <edm:isShownBy rdf:resource="' . $files['physicalFileURL'] . '"/>'.
+                            <edm:isShownBy rdf:resource="' . str_replace(' ', '%20', $files['physicalFileURL']) . '"/>'.
                             $edmobject .
                             '<edm:rights rdf:resource="https://creativecommons.org/licenses/by-nd/4.0/"/>
                             <dc:rights>Εθνικό Θέατρο</dc:rights>';
@@ -1703,7 +1707,7 @@ function get_physical_details($item, $itemID, $itemFile){
             $result['size']=$sizes['screenFile'];
             $result['sizeThumb']=$sizes['thumbFile'];  
             $result['physicalFileURL']=$URLfullScreen;
-            $result['thumbURL']=$URLfullThumb;
+            $result['thumbURL']=str_replace(' ', '%20', $URLfullThumb);
             break;
         default:
             die('wrong case ->get_physical_details');
