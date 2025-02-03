@@ -1103,7 +1103,7 @@ function rdf_get_item($item, $itemID){
 
                 $creatorsXML='';
                 $creator=getCostumeCreator($info['costumeCreator']);
-                if(!empty($creators) AND $creators['personName']!=''){
+                if(!empty($creator) AND $creator['personName']!=''){
                     $creatorsXML.= '<dc:creator xml:lang="el">' . xml_ready(fix_person_name($creator['personName'])) . '</dc:creator>
                                     <dc:creator xml:lang="en">' . xml_ready(fix_person_name($creator['personNameEN'])) . '</dc:creator>';
                 }
@@ -1183,15 +1183,25 @@ function rdf_get_item($item, $itemID){
                 }else{
                     $dccreated = '<dc:date xml:lang="el">Άγνωστη</dc:date><dcterms:created xml:lang="en">Unknown</dcterms:created>';
                 }
+                $xmlCostumeTitleEN='';
+                $xmlCostumeTitle=xml_ready($info['title']);
+                if($info['titleEN']!='' and $info['titleEN']!=$info['title']){
+                    $xmlCostumeTitleEN='<dc:title xml:lang="en" rdf:parseType="Literal">' . xml_ready($info['titleEN']) . '</dc:title>';
+                }
 
-                $XMLprov='<dc:title xml:lang="el" rdf:parseType="Literal">' . xml_ready($info['title']) . '</dc:title>
-                            <dc:title xml:lang="en" rdf:parseType="Literal">' . xml_ready($info['titleEN']) . '</dc:title>
-                            <dc:type rdf:resource="' . $semanticTypes['costumes']['concept'] . '" />
+
+                $xmlCostumeDescrEN='';
+                if($info['descriptionEN']!='' and $info['descriptionEN']!=$info['description']){
+                    $xmlCostumeDescrEN='<dc:description xml:lang="en" rdf:parseType="Literal">' . xml_ready($info['descriptionEN']) . '</dc:description>';
+                }
+
+                $XMLprov='<dc:title xml:lang="el" rdf:parseType="Literal">' . xml_ready($info['title']) . '</dc:title>'.
+                            $xmlCostumeTitleEN .
+                            '<dc:type rdf:resource="' . $semanticTypes['costumes']['concept'] . '" />
                             <dc:identifier>' . $handlerURL . "/costume/" . $itemID . '</dc:identifier>
                             <dc:identifier>' . 'poster/' . $itemID . '</dc:identifier>
-                            <dc:description xml:lang="el" rdf:parseType="Literal">' . xml_ready($info['description']) . '</dc:description>
-                            <dc:description xml:lang="en" rdf:parseType="Literal">' . xml_ready($info['descriptionEN']) . '</dc:description>'.
-                            $dccreated .
+                            <dc:description xml:lang="el" rdf:parseType="Literal">' . xml_ready($info['description']) . '</dc:description>'.
+                            $xmlCostumeDescrEN. $dccreated .
                             '<edm:type>IMAGE</edm:type>'.$creatorsXML . $XML_DC_Subject . $xmlRelation . $XMLprov;
                 
                 $thumbfile = '';
@@ -2266,7 +2276,7 @@ function getCostumeCreator($personID){
         $stmt=$dbh->prepare($sql);
         $stmt->bindParam(":pid", $personID, PDO::PARAM_INT);
         $stmt->execute();
-        $res=$stmt->fetchAll(PDO::FETCH_ASSOC);
+        $res=$stmt->fetch(PDO::FETCH_ASSOC);
         return $res;
     }catch(PDOException $err){
         echo $err->getMessage();
