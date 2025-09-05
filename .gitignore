@@ -2,3 +2,4 @@ web.config
 config.php
 composer.json
 composer.lock
+host.php

@@ -13,9 +13,10 @@ ini_set('memory_limit', '-1');
 function db_connect(): PDO
 {
     global $dbh;
+    include_once "host.php";
     try {
         $dbh = new PDO(
-            "sqlsrv:Server=194.177.217.92;Database=NT_DB", "ethnikoTheatroUSR", "ethilsp!23"); //MS SQL Server connection string
+            "sqlsrv:Server=$host;Database=$db", "$user", "$pwd"); //MS SQL Server connection string
         /*** set the error reporting attribute ***/
         $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         return $dbh;
